@@ -12,13 +12,13 @@ class Customer:
     def purchase(self, basket):
         if not self.basket:
             raise Exception("Ostukorv on tühi.")
-        elif self.balance < basket.cost():
+        elif self.balance < basket.cost(self.customer_type):
             raise Exception("Arvel pole piisavalt raha ostu sooritamiseks.")
         else:
-            for item in self.basket:
+            for item in basket.items:
                 if item.amount <= 0:
                     raise Exception("Ostukorvis on toode, mis on hetkel otsas. Ost jäi sooritamata.")
-            self.balance -= basket.cost()
+            self.balance -= basket.cost(self.customer_type)
             self.history.append(basket)
             self.basket = []
 
@@ -42,6 +42,8 @@ class Basket:
     def remove_item(self, item):
         if not self.items:
             raise Exception("Ostukorv on juba tühi.")
+        elif item not in self.items:
+            raise Exception("Toodet, mida proovite eemaldada, pole ostukorvis.")
         else:
             self.items.remove(item)
             item.amount += 1
