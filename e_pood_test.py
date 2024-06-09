@@ -1,39 +1,44 @@
 import unittest
 from python_e_pood import Shop, Customer, Item, Basket
 
-class TestShop(unittest.TestCase):
+class TestShopping(unittest.TestCase):
     def setUp(self):
-        self.shop = Shop()
-        self.customer = Customer(1, "Regular", 100)
-        self.item = Item("Apple", 10, 5)
-        self.basket = Basket()
+        self.item1 = Item('Apple', 10, 5)
+        self.item2 = Item('Banana', 20, 0)
+        self.customer = Customer(1, 'Regular Customer', 100)
 
-    def test_add_product(self):
-        self.shop.add_product(self.item)
-        self.assertIn(self.item, self.shop.products)
+    def test_add_item(self):
+        self.customer.basket.add_item(self.item1)
+        self.assertEqual(len(self.customer.basket.items), 1)
 
-    def test_add_customer(self):
-        self.shop.add_customer(self.customer)
-        self.assertIn(self.customer, self.shop.customers)
+    def test_add_item_out_of_stock(self):
+        with self.assertRaises(Exception):
+            self.customer.basket.add_item(self.item2)
 
-    def test_add_purchase(self):
-        self.basket.add_item(self.item)
-        self.customer.basket.append(self.basket)
-        self.customer.purchase(self.basket)
-        self.shop.add_purchase(self.basket)
-        self.assertIn(self.basket, self.shop.purchases)
+    def test_remove_item(self):
+        self.customer.basket.add_item(self.item1)
+        self.customer.basket.remove_item(self.item1)
+        self.assertEqual(len(self.customer.basket.items), 0)
 
-    def test_customer_purchase(self):
-        self.basket.add_item(self.item)
-        self.customer.basket.append(self.basket)
-        self.customer.purchase(self.basket)
+    def test_remove_item_not_in_basket(self):
+        with self.assertRaises(Exception):
+            self.customer.basket.remove_item(self.item1)
+
+    def test_purchase(self):
+        self.customer.basket.add_item(self.item1)
+        self.customer.purchase()
         self.assertEqual(self.customer.balance, 90)
-        self.assertEqual(self.customer.history, [self.basket])
+        self.assertEqual(len(self.customer.history), 1)
 
-    def test_basket_cost(self):
-        self.basket.add_item(self.item)
-        self.assertEqual(self.basket.cost("Regular"), 10)
-        self.assertEqual(self.basket.cost("Golden Customer"), 9)
+    def test_purchase_empty_basket(self):
+        with self.assertRaises(Exception):
+            self.customer.purchase()
 
-if __name__ == "__main__":
+    def test_purchase_insufficient_balance(self):
+        self.customer.basket.add_item(self.item1)
+        self.customer.balance = 5
+        with self.assertRaises(Exception):
+            self.customer.purchase()
+
+if __name__ == '__main__':
     unittest.main()
