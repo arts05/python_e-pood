@@ -1,26 +1,26 @@
 class Customer:
     def __init__(self, customer_id, customer_type, balance):
         self.customer_id = customer_id
-        self.basket = []
         self.customer_type = customer_type
         self.history = []
         self.balance = balance
+        self.basket = Basket()
 
     def check_history(self):
         return self.history[::-1]
 
-    def purchase(self, basket):
-        if not self.basket:
+    def purchase(self):
+        if not self.basket.items:
             raise Exception("Ostukorv on tühi.")
-        elif self.balance < basket.cost(self.customer_type):
+        elif self.balance < self.basket.cost(self.customer_type):
             raise Exception("Arvel pole piisavalt raha ostu sooritamiseks.")
         else:
-            for item in basket.items:
+            for item in self.basket.items:
                 if item.amount <= 0:
                     raise Exception("Ostukorvis on toode, mis on hetkel otsas. Ost jäi sooritamata.")
-            self.balance -= basket.cost(self.customer_type)
-            self.history.append(basket)
-            self.basket = []
+            self.balance -= self.basket.cost(self.customer_type)
+            self.history.append(self.basket)
+            self.basket = Basket()
 
 class Item:
     def __init__(self, name, price, amount):
@@ -58,7 +58,7 @@ class Shop:
     def __init__(self):
         self.products = []
         self.purchases = []
-        self.customers =[]
+        self.customers = []
 
     def add_product(self, product):
         if product in self.products:
