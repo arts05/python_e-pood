@@ -9,7 +9,7 @@ class Customer:
     def check_history(self):
         return self.history[::-1]
 
-    def purchase(self):
+    def purchase(self, shop):
         if not self.basket.items:
             raise Exception("Ostukorv on tühi.")
         elif self.balance < self.basket.cost(self.customer_type):
@@ -19,6 +19,7 @@ class Customer:
                 if item.amount <= 0:
                     raise Exception("Ostukorvis on toode, mis on hetkel otsas. Ost jäi sooritamata.")
             self.balance -= self.basket.cost(self.customer_type)
+            shop.purchases.append(self.basket)
             self.history.append(self.basket)
             self.basket = Basket()
 
